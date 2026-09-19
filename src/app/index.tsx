@@ -1,98 +1,87 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Text, Pressable, StyleSheet, StatusBar as RNStatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Board from '../components/Board';
+import { calculateWinner, isBoardFull, bestMove } from '../utils/gameLogic';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const EMPTY_BOARD: (string | null)[] = Array(9).fill(null);
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+export default function App() {
+  const [squares, setSquares] = useState<(string | null)[]>(EMPTY_BOARD);
+  const [xIsNext, setXIsNext] = useState(true);
+  const [vsComputer, setVsComputer] = useState(false);
+
+  const winnerInfo = calculateWinner(squares);
+  const draw = !winnerInfo && isBoardFull(squares);
+
+  const handlePress = useCallback((i: number) => {
+    setSquares((prev) => {
+      if (winnerInfo || prev[i]) return prev;
+      const next = [...prev];
+      next[i] = xIsNext ? 'X' : 'O';
+      return next;
+    });
+    setXIsNext((prev) => !prev);
+  }, [xIsNext, winnerInfo]);
+
+  useEffect(() => {
+    if (vsComputer && !xIsNext && !winnerInfo && !draw) {
+      const timer = setTimeout(() => {
+        const move = bestMove(squares, 'O', 'X');
+        if (move !== undefined) {
+          const next = [...squares];
+          next[move] = 'O';
+          setSquares(next);
+          setXIsNext(true);
+        }
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [xIsNext, vsComputer, squares, winnerInfo, draw]);
+
+  const resetGame = () => {
+    setSquares(EMPTY_BOARD);
+    setXIsNext(true);
+  };
+
+  let status;
+  if (winnerInfo) status = `${winnerInfo.winner} wins!`;
+  else if (draw) status = "It's a draw!";
+  else status = `${xIsNext ? 'X' : 'O'}'s turn`;
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <SafeAreaView style={styles.container}>
+      <RNStatusBar barStyle="light-content" />
+      <Text style={styles.title}>Tic Tac Toe</Text>
+      <Text style={styles.status}>{status}</Text>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+      <Board
+        squares={squares}
+        onSquarePress={handlePress}
+        winningLine={winnerInfo?.line}
+      />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      <Pressable style={styles.button} onPress={resetGame}>
+        <Text style={styles.buttonText}>New Game</Text>
+      </Pressable>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <Pressable
+        style={[styles.button, styles.secondaryButton]}
+        onPress={() => { setVsComputer((v) => !v); resetGame(); }}
+      >
+        <Text style={styles.buttonText}>
+          Mode: {vsComputer ? 'vs Computer' : '2 Player'}
+        </Text>
+      </Pressable>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  container: { flex: 1, backgroundColor: '#000000', alignItems: 'center', justifyContent: 'center', padding: 16 },
+  title: { fontSize: 28, fontWeight: '800', color: '#ffffff', marginBottom: 8 },
+  status: { fontSize: 18, color: '#c7c7cc', marginBottom: 20 },
+  button: { marginTop: 20, paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#0a84ff', borderRadius: 10 },
+  secondaryButton: { backgroundColor: '#3a3a3c', marginTop: 12 },
+  buttonText: { color: '#ffffff', fontWeight: '600', fontSize: 16 },
 });
