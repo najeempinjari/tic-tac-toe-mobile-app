@@ -1,8 +1,13 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Text, Pressable, StyleSheet, StatusBar as RNStatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Board from '../components/Board';
-import { calculateWinner, isBoardFull, bestMove } from '../utils/gameLogic';
+import { useCallback, useEffect, useState } from "react";
+import {
+  Pressable,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  Text,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Board from "../components/Board";
+import { bestMove, calculateWinner, isBoardFull } from "../utils/gameLogic";
 
 const EMPTY_BOARD: (string | null)[] = Array(9).fill(null);
 
@@ -14,23 +19,24 @@ export default function App() {
   const winnerInfo = calculateWinner(squares);
   const draw = !winnerInfo && isBoardFull(squares);
 
-  const handlePress = useCallback((i: number) => {
-    setSquares((prev) => {
-      if (winnerInfo || prev[i]) return prev;
-      const next = [...prev];
-      next[i] = xIsNext ? 'X' : 'O';
-      return next;
-    });
-    setXIsNext((prev) => !prev);
-  }, [xIsNext, winnerInfo]);
+  const handlePress = useCallback(
+    (i: number) => {
+      if (winnerInfo || draw || squares[i]) return; // ignore clicks on filled squares or after game end
+      const next = [...squares];
+      next[i] = xIsNext ? "X" : "O";
+      setSquares(next);
+      setXIsNext((prev) => !prev);
+    },
+    [squares, xIsNext, winnerInfo, draw],
+  );
 
   useEffect(() => {
     if (vsComputer && !xIsNext && !winnerInfo && !draw) {
       const timer = setTimeout(() => {
-        const move = bestMove(squares, 'O', 'X');
+        const move = bestMove(squares, "O", "X");
         if (move !== undefined) {
           const next = [...squares];
-          next[move] = 'O';
+          next[move] = "O";
           setSquares(next);
           setXIsNext(true);
         }
@@ -47,7 +53,7 @@ export default function App() {
   let status;
   if (winnerInfo) status = `${winnerInfo.winner} wins!`;
   else if (draw) status = "It's a draw!";
-  else status = `${xIsNext ? 'X' : 'O'}'s turn`;
+  else status = `${xIsNext ? "X" : "O"}'s turn`;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,10 +73,13 @@ export default function App() {
 
       <Pressable
         style={[styles.button, styles.secondaryButton]}
-        onPress={() => { setVsComputer((v) => !v); resetGame(); }}
+        onPress={() => {
+          setVsComputer((v) => !v);
+          resetGame();
+        }}
       >
         <Text style={styles.buttonText}>
-          Mode: {vsComputer ? 'vs Computer' : '2 Player'}
+          Mode: {vsComputer ? "vs Computer" : "2 Player"}
         </Text>
       </Pressable>
     </SafeAreaView>
@@ -78,10 +87,22 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000', alignItems: 'center', justifyContent: 'center', padding: 16 },
-  title: { fontSize: 28, fontWeight: '800', color: '#ffffff', marginBottom: 8 },
-  status: { fontSize: 18, color: '#c7c7cc', marginBottom: 20 },
-  button: { marginTop: 20, paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#0a84ff', borderRadius: 10 },
-  secondaryButton: { backgroundColor: '#3a3a3c', marginTop: 12 },
-  buttonText: { color: '#ffffff', fontWeight: '600', fontSize: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  title: { fontSize: 28, fontWeight: "800", color: "#ffffff", marginBottom: 8 },
+  status: { fontSize: 18, color: "#c7c7cc", marginBottom: 20 },
+  button: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    backgroundColor: "#0a84ff",
+    borderRadius: 10,
+  },
+  secondaryButton: { backgroundColor: "#3a3a3c", marginTop: 12 },
+  buttonText: { color: "#ffffff", fontWeight: "600", fontSize: 16 },
 });
