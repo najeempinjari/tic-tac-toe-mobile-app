@@ -16,6 +16,21 @@ describe("calculateWinner", () => {
     expect(calculateWinner(board).winner).toBe("X");
   });
 
+  test("detects a vertical win for the other player", () => {
+    const board = ["X", null, null, "X", null, null, "X", null, null];
+    expect(calculateWinner(board).winner).toBe("X");
+  });
+
+  test("detects a diagonal win for the other player", () => {
+    const board = ["O", null, null, null, "O", null, null, null, "O"];
+    expect(calculateWinner(board).winner).toBe("O");
+  });
+
+  test("detects the other diagonal (anti-diagonal) win", () => {
+    const board = [null, null, "X", null, "X", null, "X", null, null];
+    expect(calculateWinner(board).winner).toBe("X");
+  });
+
   test("returns null when there is no winner yet", () => {
     const board = ["X", "O", null, null, null, null, null, null, null];
     expect(calculateWinner(board)).toBeNull();
@@ -52,5 +67,16 @@ describe("bestMove (AI)", () => {
     const board = ["O", "O", null, "X", "X", null, null, null, null];
     const move = bestMove(board, "O", "X");
     expect(move).toBe(2);
+  });
+});
+
+describe("draw detection", () => {
+  test("a full board with no winning line is a draw, not a win", () => {
+    // X O X
+    // X O O
+    // O X X
+    const board = ["X", "O", "X", "X", "O", "O", "O", "X", "X"];
+    expect(calculateWinner(board)).toBeNull();
+    expect(isBoardFull(board)).toBe(true);
   });
 });
