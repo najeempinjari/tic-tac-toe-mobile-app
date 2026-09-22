@@ -8,6 +8,8 @@ jobs:
   update:
     name: Publish OTA Update
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
     steps:
       - uses: actions/checkout@v4
 
@@ -22,7 +24,6 @@ jobs:
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
-          eas-version: none
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Publish update
