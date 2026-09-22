@@ -16,13 +16,14 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: none
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - run: npm ci
-
       - name: Publish update
-        run: eas update --branch production --message "Auto OTA update from ${{ github.sha }}"
+        run: npx eas-cli update --branch production --message "Auto OTA update from ${{ github.sha }}" --non-interactive
