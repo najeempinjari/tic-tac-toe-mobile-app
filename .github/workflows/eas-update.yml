@@ -22,4 +22,4 @@ jobs:
       - name: Publish update
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: npx eas-cli update --branch production --message "Auto OTA update from ${{ github.sha }}" --non-interactive
+        run: npx eas-cli update --branch preview --message "Auto OTA update from ${{ github.sha }}" --non-interactive
