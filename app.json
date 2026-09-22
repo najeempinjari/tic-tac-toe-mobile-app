@@ -22,6 +22,17 @@
       "bundleIdentifier": "com.yourname.tictactoe",
       "buildNumber": "1.0.0",
       "supportsTablet": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "64a5cee1-230b-4655-bcc5-c913c62a5ea7"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/64a5cee1-230b-4655-bcc5-c913c62a5ea7"
     }
   }
 }
