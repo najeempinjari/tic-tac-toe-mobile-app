@@ -58,7 +58,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <RNStatusBar barStyle="light-content" />
-      <Text style={styles.title}>Uzair's Game Zone</Text>
+      <Text style={styles.title}>Uzair's Game Zone 🎮</Text>
       <Text style={styles.title}>Tic Tac Toe 🎮</Text>
       <Text style={styles.status}>{status}</Text>
 
