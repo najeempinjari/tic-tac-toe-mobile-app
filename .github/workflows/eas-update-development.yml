@@ -1,0 +1,19 @@
+name: EAS Update (Development)
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  update:
+    name: Publish Development Update
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: "npm" }
+      - run: npm ci
+      - name: Publish update
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli update --branch development --message "Dev OTA from ${{ github.sha }}" --non-interactive
