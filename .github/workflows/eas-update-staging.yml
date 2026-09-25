@@ -1,0 +1,19 @@
+name: EAS Update (Staging)
+
+on:
+  push:
+    branches: [staging]
+
+jobs:
+  update:
+    name: Publish Staging Update
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: "npm" }
+      - run: npm ci
+      - name: Publish update
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli update --branch staging --message "Staging OTA from ${{ github.sha }}" --non-interactive
