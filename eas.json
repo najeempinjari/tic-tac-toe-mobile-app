@@ -7,14 +7,13 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "android": { "buildType": "apk" },
       "channel": "development"
     },
-    "preview": {
+    "staging": {
       "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "channel": "preview"
+      "android": { "buildType": "apk" },
+      "channel": "staging"
     },
     "production": {
       "autoIncrement": true,
