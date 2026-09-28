@@ -1,0 +1,69 @@
+name: Reusable EAS Build
+
+on:
+  workflow_call:
+    inputs:
+      profile:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      extension:
+        required: true
+        type: string
+      prerelease:
+        required: true
+        type: boolean
+    secrets:
+      EXPO_TOKEN:
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ inputs.profile }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify commit belongs to the expected branch
+        run: |
+          git fetch origin ${{ inputs.branch }}
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/${{ inputs.branch }}"; then
+            echo "This commit is not on ${{ inputs.branch }}. Aborting."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Build and download artifact
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npx eas-cli build --platform android --profile ${{ inputs.profile }} --non-interactive --wait --json > build-output.json
+          BUILD_URL=$(node -p "require('./build-output.json')[0].artifacts.buildUrl")
+          curl -L "$BUILD_URL" -o "app-${{ inputs.profile }}-${GITHUB_REF_NAME}.${{ inputs.extension }}"
+
+      - name: Attach to GitHub Release (tag builds)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app-${{ inputs.profile }}-*.${{ inputs.extension }}
+          prerelease: ${{ inputs.prerelease }}
+
+      - name: Upload as run artifact (manual builds)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ inputs.profile }}
+          path: app-${{ inputs.profile }}-*.${{ inputs.extension }}
