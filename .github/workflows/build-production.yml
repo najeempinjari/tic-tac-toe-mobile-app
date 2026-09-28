@@ -1,0 +1,19 @@
+name: Build (Production)
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-reusable.yml
+    with:
+      profile: production
+      branch: main
+      extension: aab
+      prerelease: false
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
