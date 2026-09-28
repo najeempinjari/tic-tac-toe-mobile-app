@@ -1,0 +1,19 @@
+name: Build (Staging)
+
+on:
+  push:
+    tags: ["staging-*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-reusable.yml
+    with:
+      profile: staging
+      branch: staging
+      extension: apk
+      prerelease: true
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
