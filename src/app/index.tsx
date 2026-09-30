@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Board from "../components/Board";
 import { bestMove, calculateWinner, isBoardFull } from "../utils/gameLogic";
 import { DEFAULT_THEME, THEMES } from "../utils/themes";
+import { useSounds } from "../utils/useSounds";
 
 const EMPTY_BOARD: (string | null)[] = Array(9).fill(null);
 
@@ -21,6 +22,7 @@ export default function App() {
 
   const winnerInfo = calculateWinner(squares);
   const draw = !winnerInfo && isBoardFull(squares);
+  const { playTap, playWin, playDraw } = useSounds();
 
   const handlePress = useCallback(
     (i: number) => {
@@ -29,6 +31,7 @@ export default function App() {
       next[i] = xIsNext ? "X" : "O";
       setSquares(next);
       setXIsNext((prev) => !prev);
+      playTap();
     },
     [squares, xIsNext, winnerInfo, draw],
   );
@@ -47,6 +50,11 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [xIsNext, vsComputer, squares, winnerInfo, draw]);
+
+  useEffect(() => {
+    if (winnerInfo) playWin();
+    else if (draw) playDraw();
+  }, [winnerInfo, draw]);
 
   const resetGame = () => {
     setSquares(EMPTY_BOARD);
