@@ -1,19 +1,28 @@
-import React from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text } from "react-native";
 
-export default function Square({ value, onPress, isWinning, size }) {
+export default function Square({ value, onPress, isWinning, size, theme }) {
+  const bg = isWinning ? theme.winBg : theme.squareEmpty;
+  const textColor =
+    value === "X" ? theme.xColor : value === "O" ? theme.oColor : "transparent";
+
   return (
     <Pressable
       onPress={onPress}
       style={[
         styles.square,
-        { width: size, height: size },
-        isWinning && styles.winningSquare,
+        {
+          width: size,
+          height: size,
+          backgroundColor: bg,
+          borderColor: theme.squareBorder,
+        },
       ]}
       accessibilityRole="button"
-      accessibilityLabel={value ? `Square marked ${value}` : 'Empty square'}
+      accessibilityLabel={value ? `Square marked ${value}` : "Empty square"}
     >
-      <Text style={[styles.text, { fontSize: size * 0.5 }]}>{value}</Text>
+      <Text style={[styles.text, { fontSize: size * 0.5, color: textColor }]}>
+        {value}
+      </Text>
     </Pressable>
   );
 }
@@ -21,16 +30,10 @@ export default function Square({ value, onPress, isWinning, size }) {
 const styles = StyleSheet.create({
   square: {
     borderWidth: 1,
-    borderColor: '#3a3a3c',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#1c1c1e',
-  },
-  winningSquare: {
-    backgroundColor: '#2e5d34',
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
-    fontWeight: '700',
-    color: '#ffffff',
+    fontWeight: "800",
   },
 });
