@@ -11,7 +11,7 @@
       "backgroundColor": "#000000"
     },
     "android": {
-      "package": "com.yourname.tictactoe",
+      "package": "ai.nzm.tictactoe",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -19,7 +19,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.yourname.tictactoe",
+      "bundleIdentifier": "ai.nzm.tictactoe",
       "buildNumber": "1.0.0",
       "supportsTablet": true
     },
