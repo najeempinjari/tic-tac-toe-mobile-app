@@ -15,5 +15,6 @@ jobs:
       branch: main
       extension: aab
       prerelease: false
+      tag_prefix: "v"
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

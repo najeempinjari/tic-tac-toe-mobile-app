@@ -15,6 +15,9 @@ on:
       prerelease:
         required: true
         type: boolean
+      tag_prefix:
+        required: true
+        type: string
     secrets:
       EXPO_TOKEN:
         required: true
@@ -54,12 +57,22 @@ jobs:
           BUILD_URL=$(node -p "require('./build-output.json')[0].artifacts.buildUrl")
           curl -L "$BUILD_URL" -o "app-${{ inputs.profile }}-${GITHUB_REF_NAME}.${{ inputs.extension }}"
 
+      - name: Find previous release tag for this environment
+        id: prevtag
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | grep "^${{ inputs.tag_prefix }}" | sed -n '2p')
+          echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+          echo "Previous tag for this environment: $PREV_TAG"
+
       - name: Attach to GitHub Release (tag builds)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: app-${{ inputs.profile }}-*.${{ inputs.extension }}
           prerelease: ${{ inputs.prerelease }}
+          generate_release_notes: true
+          target_commitish: ${{ inputs.branch }}
+          previous_tag_name: ${{ steps.prevtag.outputs.prev_tag }}
 
       - name: Upload as run artifact (manual builds)
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
