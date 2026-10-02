@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  Linking,
   Pressable,
   StatusBar as RNStatusBar,
   ScrollView,
@@ -132,6 +133,19 @@ export default function App() {
       <Text style={[styles.credit, { color: theme.statusColor }]}>
         Made by Najeem Pinjari
       </Text>
+      <Pressable
+        onPress={() =>
+          Linking.openURL(
+            "https://najeempinjari.github.io/tic-tac-toe-mobile-app/privacy-policy.html",
+          )
+        }
+      >
+        <Text
+          style={[styles.credit, { color: theme.statusColor, marginTop: 4 }]}
+        >
+          Privacy Policy
+        </Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
