@@ -15,5 +15,6 @@ jobs:
       branch: staging
       extension: apk
       prerelease: true
+      tag_prefix: "staging-"
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
