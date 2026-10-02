@@ -16,5 +16,6 @@ jobs:
       branch: develop
       extension: apk
       prerelease: true
+      tag_prefix: "dev-"
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
