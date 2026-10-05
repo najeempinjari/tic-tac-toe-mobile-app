@@ -1,7 +1,7 @@
 {
   "name": "tic-tac-toe",
   "main": "expo-router/entry",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "dependencies": {
     "expo": "~57.0.24",
     "expo-audio": "~57.0.5",
