@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Linking,
   Pressable,
@@ -21,7 +21,7 @@ export default function App() {
   const [vsComputer, setVsComputer] = useState(false);
   const [theme, setTheme] = useState(DEFAULT_THEME);
 
-  const winnerInfo = calculateWinner(squares);
+  const winnerInfo = useMemo(() => calculateWinner(squares), [squares]);
   const draw = !winnerInfo && isBoardFull(squares);
   const { playTap, playWin, playDraw } = useSounds();
 
@@ -34,7 +34,7 @@ export default function App() {
       setXIsNext((prev) => !prev);
       playTap();
     },
-    [squares, xIsNext, winnerInfo, draw],
+    [squares, xIsNext, winnerInfo, draw, playTap],
   );
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function App() {
   useEffect(() => {
     if (winnerInfo) playWin();
     else if (draw) playDraw();
-  }, [winnerInfo, draw]);
+  }, [winnerInfo, draw, playWin, playDraw]);
 
   const resetGame = () => {
     setSquares(EMPTY_BOARD);
