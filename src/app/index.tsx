@@ -27,6 +27,8 @@ export default function App() {
 
   const handlePress = useCallback(
     (i: number) => {
+      // Ignore taps while the computer is choosing its move
+      if (vsComputer && !xIsNext) return;
       if (winnerInfo || draw || squares[i]) return;
       const next = [...squares];
       next[i] = xIsNext ? "X" : "O";
@@ -34,7 +36,7 @@ export default function App() {
       setXIsNext((prev) => !prev);
       playTap();
     },
-    [squares, xIsNext, winnerInfo, draw, playTap],
+    [vsComputer, squares, xIsNext, winnerInfo, draw, playTap],
   );
 
   useEffect(() => {
