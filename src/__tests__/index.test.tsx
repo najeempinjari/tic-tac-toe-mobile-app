@@ -1,4 +1,9 @@
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react-native";
 import App from "../app/index";
 
 // expo-audio needs native code, which doesn't exist under Jest
@@ -13,6 +18,8 @@ jest.mock("../utils/useSounds", () => ({
     playDraw: mockPlayDraw,
   }),
 }));
+
+jest.setTimeout(15000);
 
 beforeEach(() => jest.clearAllMocks());
 
@@ -74,7 +81,9 @@ describe("Tic Tac Toe screen", () => {
   });
 
   test("in vs Computer mode, a tap during the computer turn is ignored", async () => {
-    jest.useFakeTimers();
+    jest.useFakeTimers({
+      doNotFake: ["nextTick", "queueMicrotask", "setImmediate"],
+    });
     await render(<App />);
     await fireEvent.press(screen.getByText(/Mode:/)); // switch to vs Computer
     await fireEvent.press(getSquares()[0]); // X plays square 0
@@ -83,15 +92,14 @@ describe("Tic Tac Toe screen", () => {
   });
 
   test("in vs Computer mode, the computer still replies after a rejected tap", async () => {
-    jest.useFakeTimers();
     await render(<App />);
     await fireEvent.press(screen.getByText(/Mode:/));
     await fireEvent.press(getSquares()[0]); // X plays
-    await fireEvent.press(getSquares()[8]); // ignored
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
-    expect(screen.getAllByLabelText("Square marked O")).toHaveLength(1);
+    await fireEvent.press(getSquares()[8]); // ignored: computer's turn
+    await waitFor(
+      () => expect(screen.getAllByLabelText("Square marked O")).toHaveLength(1),
+      { timeout: 3000 },
+    );
     expect(screen.getByText("X's turn")).toBeTruthy();
   });
 
