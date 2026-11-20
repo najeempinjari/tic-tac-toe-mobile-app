@@ -1,56 +1,87 @@
-# Welcome to your Expo app 👋
+# Tic Tac Toe
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+[![Run Tests](https://github.com/najeempinjari/tic-tac-toe-mobile-app/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/najeempinjari/tic-tac-toe-mobile-app/actions/workflows/test.yml)
 
-## Get started
+A responsive Tic Tac Toe game for Android, built with React Native and Expo. Play a friend on one device, or play a computer opponent that cannot be beaten. No ads, no accounts, and no personal data collected.
 
-1. Install dependencies
+Available on the Indus AppStore.
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- Two-player mode and a vs Computer mode (minimax search; the computer plays O)
+- Four color themes: Harbor, Clay, Plum, and Meadow
+- Tap, win, and draw sound effects
+- A board that adapts to any screen size and orientation
+- Screen-reader labels on every square
+- Over-the-air updates for JavaScript changes
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+- Expo SDK 57, React Native, and expo-router (file-based routing)
+- TypeScript for screens; JavaScript for components and game logic
+- Jest and React Native Testing Library
+- GitHub Actions for CI/CD; EAS Build and EAS Update for builds and over-the-air updates
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Getting started
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+You need Node.js 22 or newer (CI runs 22; development uses 24), Git, and the Expo Go app on an Android phone.
 
 ```bash
-npm run reset-project
+git clone https://github.com/najeempinjari/tic-tac-toe-mobile-app.git
+cd tic-tac-toe-mobile-app
+npm ci
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan the QR code with Expo Go, or press `a` to open an Android emulator.
 
-### Other setup steps
+## Scripts
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+| Command                              | Purpose                              |
+| ------------------------------------ | ------------------------------------ |
+| `npx expo start`                     | Start the development server         |
+| `npx jest`                           | Run the tests                        |
+| `npx jest --coverage`                | Run the tests with a coverage report |
+| `npx expo lint`                      | Lint the code                        |
+| `npx tsc --noEmit`                   | Type-check                           |
+| `npx expo export --platform android` | Check that the app bundles           |
 
-## Learn more
+## Project structure
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+src/
+  app/          screens and layout (expo-router)
+  components/   Board and Square
+  utils/        game logic, themes, sound hook, tests
+  __tests__/    screen tests
+docs/           privacy policy page (served by GitHub Pages)
+.github/        CI/CD workflows
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Branches and delivery
 
-## Join the community
+| Branch    | Environment | Update channel |
+| --------- | ----------- | -------------- |
+| `develop` | Development | `development`  |
+| `staging` | Staging     | `staging`      |
+| `main`    | Production  | `production`   |
 
-Join our community of developers creating universal apps.
+Work happens on short-lived `feature/*`, `fix/*`, `chore/*`, and `docs/*` branches created from `develop`. Each goes through a pull request with one approving review and passing CI checks. Merging into a long-lived branch publishes an over-the-air update to that environment. Native builds are triggered by tags (`dev-*`, `staging-*`, `v*`) and attached to GitHub Releases.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Privacy
+
+The app collects no personal data. Read the [privacy policy](https://najeempinjari.github.io/tic-tac-toe-mobile-app/privacy-policy.html).
+
+## Third-Party Licenses
+
+This app uses open-source libraries. View the full list in [Third-Party Licenses](docs/third-party-notices.md).
+
+## Development
+
+Open a pull request against `develop`. Add or update tests with your change, and run `npx expo lint`, `npx tsc --noEmit`, and `npx jest` before pushing.
+
+## License
+
+All Rights Reserved. See [LICENSE](LICENSE).
+
+Made by Najeem Pinjari.
