@@ -1,3 +1,4 @@
+import { APP_CONFIG } from "@/utils/config";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Linking,
@@ -6,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Board from "../components/Board";
@@ -13,7 +15,9 @@ import { bestMove, calculateWinner, isBoardFull } from "../utils/gameLogic";
 import { DEFAULT_THEME, THEMES } from "../utils/themes";
 import { useSounds } from "../utils/useSounds";
 
-const EMPTY_BOARD: (string | null)[] = Array(9).fill(null);
+const EMPTY_BOARD: (string | null)[] = Array(APP_CONFIG.game.boardSize).fill(
+  null,
+);
 
 export default function App() {
   const [squares, setSquares] = useState<(string | null)[]>(EMPTY_BOARD);
@@ -49,7 +53,7 @@ export default function App() {
           setSquares(next);
           setXIsNext(true);
         }
-      }, 400);
+      }, APP_CONFIG.game.aiMoveDelayMs);
       return () => clearTimeout(timer);
     }
   }, [xIsNext, vsComputer, squares, winnerInfo, draw]);
@@ -133,21 +137,33 @@ export default function App() {
         ))}
       </ScrollView>
       <Text style={[styles.credit, { color: theme.statusColor }]}>
-        Made by Najeem Pinjari
+        Made by {APP_CONFIG.author}
       </Text>
-      <Pressable
-        onPress={() =>
-          Linking.openURL(
-            "https://najeempinjari.github.io/tic-tac-toe-mobile-app/privacy-policy.html",
-          )
-        }
-      >
-        <Text
-          style={[styles.credit, { color: theme.statusColor, marginTop: 4 }]}
+      <View style={styles.legalRow}>
+        <Pressable
+          hitSlop={8}
+          accessibilityRole="link"
+          style={({ pressed }) => pressed && styles.linkPressed}
+          onPress={() => Linking.openURL(APP_CONFIG.links.privacyPolicy)}
         >
-          Privacy Policy
-        </Text>
-      </Pressable>
+          <Text style={[styles.legalLink, { color: theme.statusColor }]}>
+            Privacy Policy
+          </Text>
+        </Pressable>
+
+        <Text style={[styles.separator, { color: theme.statusColor }]}>•</Text>
+
+        <Pressable
+          hitSlop={8}
+          accessibilityRole="link"
+          style={({ pressed }) => pressed && styles.linkPressed}
+          onPress={() => Linking.openURL(APP_CONFIG.links.thirdPartyNotices)}
+        >
+          <Text style={[styles.legalLink, { color: theme.statusColor }]}>
+            Third-Party Licenses
+          </Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -185,4 +201,22 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   credit: { marginTop: 18, fontSize: 11, opacity: 0.6 },
+  legalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  legalLink: {
+    fontSize: 11,
+    opacity: 0.6,
+    textDecorationLine: "underline",
+  },
+  separator: {
+    fontSize: 11,
+    opacity: 0.4,
+    marginHorizontal: 8,
+  },
+  linkPressed: {
+    opacity: 0.4,
+  },
 });

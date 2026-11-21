@@ -4,7 +4,9 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react-native";
+import { Linking } from "react-native";
 import App from "../app/index";
+import { APP_CONFIG } from "../utils/config";
 
 // expo-audio needs native code, which doesn't exist under Jest
 const mockPlayTap = jest.fn();
@@ -109,5 +111,27 @@ describe("Tic Tac Toe screen", () => {
     await fireEvent.press(getSquares()[1]);
     expect(screen.getAllByLabelText("Square marked O")).toHaveLength(1);
     expect(screen.getByText("X's turn")).toBeTruthy();
+  });
+
+  test("renders Privacy Policy and Third-Party Licenses links and opens URLs on press", async () => {
+    const openUrlSpy = jest
+      .spyOn(Linking, "openURL")
+      .mockResolvedValue(undefined);
+
+    await render(<App />);
+
+    const privacyLink = screen.getByText("Privacy Policy");
+    const licensesLink = screen.getByText("Third-Party Licenses");
+
+    expect(privacyLink).toBeTruthy();
+    expect(licensesLink).toBeTruthy();
+
+    await fireEvent.press(privacyLink);
+    expect(openUrlSpy).toHaveBeenCalledWith(APP_CONFIG.links.privacyPolicy);
+
+    await fireEvent.press(licensesLink);
+    expect(openUrlSpy).toHaveBeenCalledWith(APP_CONFIG.links.thirdPartyNotices);
+
+    openUrlSpy.mockRestore();
   });
 });

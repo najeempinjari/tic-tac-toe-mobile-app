@@ -38,7 +38,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest --watchAll"
+    "test": "jest --runInBand",
+    "test:watch": "jest --watchAll --runInBand"
   },
   "jest": {
     "preset": "jest-expo"
